@@ -2,10 +2,10 @@
 
 A simple example TODO app build using:
 
-- [HTMX](https://htmx.org/)
+- [htmx](https://htmx.org/)
 - [Rust](https://www.rust-lang.org/)
 - [Rocket](https://rocket.rs/) web framework using handlebars templates
-- [SQLx](https://github.com/launchbadge/sqlx) ans SQLlite
+- [SQLx](https://github.com/launchbadge/sqlx) and [SQLite](https://sqlite.org/)
 
 ## Run
 
