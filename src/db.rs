@@ -1,7 +1,7 @@
 use crate::DB_URL;
 use serde::Serialize;
 use sqlx::migrate::MigrateDatabase;
-use sqlx::{Pool, Sqlite, SqlitePool};
+use sqlx::{Error, Pool, Sqlite, SqlitePool};
 
 #[derive(Serialize)]
 pub struct Todo {
@@ -14,7 +14,7 @@ async fn conn() -> Result<Pool<Sqlite>, sqlx::Error> {
     SqlitePool::connect(DB_URL).await
 }
 
-pub async fn maybe_create_database() -> Result<(), sqlx::Error> {
+pub async fn maybe_create_database() -> Result<(), Error> {
     if !Sqlite::database_exists(DB_URL).await.unwrap_or(false) {
         info!("Creating database {}", DB_URL);
         Sqlite::create_database(DB_URL).await?
@@ -35,7 +35,7 @@ pub async fn maybe_create_database() -> Result<(), sqlx::Error> {
     Ok(())
 }
 
-pub async fn add_todo(title: &String) -> Result<i64, sqlx::Error> {
+pub async fn add_todo(title: &String) -> Result<i64, DbError> {
     let res = sqlx::query("INSERT INTO todos (title, completed) VALUES (?, 0)")
         .bind(title)
         .execute(&conn().await?)
@@ -44,7 +44,7 @@ pub async fn add_todo(title: &String) -> Result<i64, sqlx::Error> {
     Ok(res.last_insert_rowid())
 }
 
-pub async fn get_todo(id: i64) -> Result<Todo, sqlx::Error> {
+pub async fn get_todo(id: i64) -> Result<Todo, DbError> {
     let row: (i64, String, i8) =
         sqlx::query_as("SELECT id, title, completed FROM todos WHERE id=?")
             .bind(id)
@@ -57,7 +57,7 @@ pub async fn get_todo(id: i64) -> Result<Todo, sqlx::Error> {
     })
 }
 
-pub async fn update_todo(id: i64, title: &String) -> Result<(), sqlx::Error> {
+pub async fn update_todo(id: i64, title: &String) -> Result<(), DbError> {
     let _ = sqlx::query(
         "UPDATE todos SET title = ? WHERE id=?",
     )
@@ -68,7 +68,7 @@ pub async fn update_todo(id: i64, title: &String) -> Result<(), sqlx::Error> {
     Ok(())
 }
 
-pub async fn toggle_todo_completed(id: i64) -> Result<(), sqlx::Error> {
+pub async fn toggle_todo_completed(id: i64) -> Result<(), DbError> {
     let _ = sqlx::query(
         "UPDATE todos SET completed = \
         CASE WHEN completed = 1 THEN 0 \
@@ -82,14 +82,14 @@ pub async fn toggle_todo_completed(id: i64) -> Result<(), sqlx::Error> {
     Ok(())
 }
 
-pub async fn clear_completed() -> Result<(), sqlx::Error> {
+pub async fn clear_completed() -> Result<(), DbError> {
     let _ = sqlx::query("DELETE FROM todos where completed = 1")
         .execute(&conn().await?)
         .await?;
     Ok(())
 }
 
-pub async fn get_todos() -> Result<Vec<Todo>, sqlx::Error> {
+pub async fn get_todos() -> Result<Vec<Todo>, DbError> {
     let rows: Vec<(i64, String, i8)> = sqlx::query_as("SELECT id, title, completed FROM todos ORDER BY id DESC")
         .fetch_all(&conn().await?)
         .await?;
@@ -101,4 +101,13 @@ pub async fn get_todos() -> Result<Vec<Todo>, sqlx::Error> {
             completed: row.2 == 1,
         })
         .collect::<Vec<Todo>>())
+}
+
+
+pub struct DbError;
+
+impl From<Error> for DbError {
+    fn from(_: Error) -> Self {
+        DbError
+    }
 }
