@@ -1,0 +1,20 @@
+[package]
+name = "example-todo-app-rust-htmx"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+
+# db
+sqlx = { version = "0.7.4", features = ["runtime-async-std", "sqlite"] }
+
+# web framework
+rocket = "0.5.1"
+
+# templating
+rocket_dyn_templates = { version = "0.2.0", features = ["minijinja", "handlebars"] }
+serde = { version = "1.0.203", features = ["derive"] }
+
+# logging
+tracing = { version = "0.1.40", features = ["log"] }
+tracing-subscriber = { version = "0.3.18", default-features = false, features = ["fmt", "json", "ansi"] }

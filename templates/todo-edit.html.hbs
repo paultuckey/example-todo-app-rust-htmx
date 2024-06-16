@@ -1,0 +1,21 @@
+<div class="card mr-2 mb-2" id="todo-card{{ todo.id }}">
+    <div class="card-body">
+        <div class="card-text">
+            <form hx-post="/todo-edit/{{ todo.id }}"
+                  hx-target="#todo-card{{ todo.id }}"
+                  hx-swap="outerHTML"
+                  hx-trigger="submit" class="mb-0">
+                <div class="input-group">
+                    <input autocomplete="off" class="form-control"
+                           autofocus required minlength="1" maxlength="1024"
+                           type="text" name="title" value="{{ todo.title }}"
+                           placeholder="Edit TODO">
+                    <button hx-get="/todo-read/{{ todo.id }}"
+                            hx-target="#todo-card{{ todo.id }}"
+                            hx-swap="outerHTML" title="Cancel"
+                            class="btn btn-light"><i class="bi bi-x"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

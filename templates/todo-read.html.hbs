@@ -1,0 +1,26 @@
+<div class="card mr-2 mb-2" id="todo-card{{ todo.id }}">
+    <div class="card-body">
+        <div class="card-text p-1">
+            <div class="float-end">
+                <button hx-get="/todo-edit/{{ todo.id }}"
+                        hx-target="#todo-card{{ todo.id }}"
+                        hx-swap="outerHTML"
+                        class="btn btn-light"><i class="bi bi-pencil"></i></button>
+            </div>
+            <div class="form-check">
+                <input title="Complete TODO"
+                       class="form-check-input" type="checkbox"
+                       value=""
+                       id="flexCheck{{ todo.id }}"
+                       hx-post="/todo-complete/{{ todo.id }}"
+                       hx-target="#todo-card{{ todo.id }}"
+                       hx-swap="outerHTML"
+                       {{#if todo.completed }}checked{{/if}}>
+                <label class="form-check-label" for="flexCheck{{ todo.id }}"
+                       style="{{#if todo.completed}}text-decoration: line-through;{{/if}}">
+                    {{ todo.title }}
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
