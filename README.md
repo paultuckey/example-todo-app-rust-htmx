@@ -1,4 +1,4 @@
-# Rust HTMX TODO
+# Example TODO app with Rust HTMx
 
 A simple example TODO app build using:
 
