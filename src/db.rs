@@ -58,7 +58,7 @@ pub async fn get_todo(id: i64) -> Result<Todo, DbError> {
 }
 
 pub async fn update_todo(id: i64, title: &String) -> Result<(), DbError> {
-    let _ = sqlx::query(
+    sqlx::query(
         "UPDATE todos SET title = ? WHERE id=?",
     )
         .bind(title)
@@ -69,7 +69,7 @@ pub async fn update_todo(id: i64, title: &String) -> Result<(), DbError> {
 }
 
 pub async fn toggle_todo_completed(id: i64) -> Result<(), DbError> {
-    let _ = sqlx::query(
+    sqlx::query(
         "UPDATE todos SET completed = \
         CASE WHEN completed = 1 THEN 0 \
         ELSE 1
@@ -83,7 +83,7 @@ pub async fn toggle_todo_completed(id: i64) -> Result<(), DbError> {
 }
 
 pub async fn clear_completed() -> Result<(), DbError> {
-    let _ = sqlx::query("DELETE FROM todos where completed = 1")
+    sqlx::query("DELETE FROM todos where completed = 1")
         .execute(&conn().await?)
         .await?;
     Ok(())
