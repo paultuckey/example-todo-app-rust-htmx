@@ -12,7 +12,7 @@
                            placeholder="Edit TODO">
                     <button hx-get="/todo-read/{{ todo.id }}"
                             hx-target="#todo-card{{ todo.id }}"
-                            hx-swap="outerHTML" title="Cancel"
+                            hx-swap="outerHTML" title="Cancel" type="button"
                             class="btn btn-light"><i class="bi bi-x"></i></button>
                 </div>
             </form>
