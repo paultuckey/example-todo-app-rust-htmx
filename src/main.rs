@@ -1,12 +1,14 @@
-mod db;
-
 #[macro_use]
 extern crate rocket;
 
-use crate::db::{add_todo, clear_completed, DbError, get_todo, get_todos, maybe_create_database, toggle_todo_completed, update_todo};
 use rocket::form::Form;
 use rocket::http::Status;
-use rocket_dyn_templates::{context, Template};
+use rocket_dyn_templates::{context, Metadata, Template};
+use rocket_dyn_templates::handlebars::Handlebars;
+
+use crate::db::{add_todo, clear_completed, DbError, get_todo, get_todos, maybe_create_database, toggle_todo_completed, update_todo};
+
+mod db;
 
 const DB_URL: &str = "sqlite://sqlite.db";
 
@@ -74,9 +76,9 @@ async fn post_todo_edit(id: i64, form: Form<TodoForm>) -> Result<Template, Statu
 }
 
 #[get("/todo-edit/<id>")]
-async fn get_todo_edit(id: i64)-> Result<Template, Status> {
+async fn get_todo_edit(id: i64) -> Result<Template, Status> {
     let todo = get_todo(id).await?;
-   Ok( Template::render(
+    Ok(Template::render(
         "todo-edit",
         context! {
             todo
@@ -85,7 +87,7 @@ async fn get_todo_edit(id: i64)-> Result<Template, Status> {
 }
 
 #[get("/todo-read/<id>")]
-async fn get_todo_read(id: i64)-> Result<Template, Status> {
+async fn get_todo_read(id: i64) -> Result<Template, Status> {
     let todo = get_todo(id).await?;
     Ok(Template::render(
         "todo-read",
@@ -96,7 +98,7 @@ async fn get_todo_read(id: i64)-> Result<Template, Status> {
 }
 
 #[post("/todo-complete/<id>")]
-async fn post_todo_complete(id: i64)-> Result<Template, Status> {
+async fn post_todo_complete(id: i64) -> Result<Template, Status> {
     toggle_todo_completed(id).await?;
     let todo = get_todo(id).await?;
     Ok(Template::render(
@@ -108,7 +110,7 @@ async fn post_todo_complete(id: i64)-> Result<Template, Status> {
 }
 
 #[post("/todos-clear-completed")]
-async fn post_todo_clear_completed()-> Result<Template, Status> {
+async fn post_todo_clear_completed() -> Result<Template, Status> {
     clear_completed().await?;
     let todos = get_todos().await?;
     Ok(Template::render(
