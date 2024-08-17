@@ -3,8 +3,7 @@ extern crate rocket;
 
 use rocket::form::Form;
 use rocket::http::Status;
-use rocket_dyn_templates::{context, Metadata, Template};
-use rocket_dyn_templates::handlebars::Handlebars;
+use rocket_dyn_templates::{context, Template};
 
 use crate::db::{add_todo, clear_completed, DbError, get_todo, get_todos, maybe_create_database, toggle_todo_completed, update_todo};
 
