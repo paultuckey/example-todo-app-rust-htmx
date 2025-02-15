@@ -6,15 +6,11 @@ edition = "2021"
 [dependencies]
 
 # db
-sqlx = { version = "0.8.2", features = ["runtime-async-std", "sqlite"] }
+sqlx = { version = "0.8.3", features = ["runtime-async-std", "sqlite"] }
 
 # web framework
 rocket = "0.5.1"
 
 # templating
 rocket_dyn_templates = { version = "0.2.0", features = ["handlebars"] }
-serde = { version = "1.0.213", features = ["derive"] }
-
-# logging
-tracing = { version = "0.1.40", features = ["log"] }
-tracing-subscriber = { version = "0.3.18", default-features = false, features = ["fmt", "json", "ansi"] }
+serde = { version = "1.0.217", features = ["derive"] }
