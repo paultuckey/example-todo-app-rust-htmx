@@ -1,0 +1,10 @@
+version: 2
+
+updates:
+
+  - package-ecosystem: "cargo"
+    open-pull-requests-limit: 10
+    allow:
+      - dependency-type: direct
+    schedule:
+      interval: monthly
