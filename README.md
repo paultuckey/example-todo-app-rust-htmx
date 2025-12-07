@@ -26,3 +26,7 @@ cargo watch -x run
 ```shell
 cargo clippy
 ```
+
+```shell
+cargo fmt
+```

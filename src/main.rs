@@ -3,19 +3,22 @@ extern crate rocket;
 
 use rocket::form::Form;
 use rocket::http::Status;
-use rocket_dyn_templates::{context, Template};
+use rocket_dyn_templates::{Template, context};
 
-use crate::db::{add_todo, clear_completed, DbError, get_todo, get_todos, maybe_create_database, toggle_todo_completed, update_todo};
+use crate::db::{
+    DbError, add_todo, clear_completed, get_todo, get_todos, maybe_create_database,
+    toggle_todo_completed, update_todo,
+};
 
 mod db;
 
 const DB_URL: &str = "sqlite://sqlite.db";
 
 #[rocket::main]
-async fn main() -> Result<(), rocket::Error> {
-    maybe_create_database().await.expect("Failed to create DB");
+async fn main() -> Result<(), DbError> {
+    maybe_create_database().await?;
 
-    let _rocket = rocket::build()
+    let _ = rocket::build()
         .attach(Template::fairing())
         .mount(
             "/",
@@ -30,7 +33,7 @@ async fn main() -> Result<(), rocket::Error> {
             ],
         )
         .launch()
-        .await?;
+        .await;
     Ok(())
 }
 
@@ -125,4 +128,3 @@ impl From<DbError> for Status {
         Status::InternalServerError
     }
 }
-

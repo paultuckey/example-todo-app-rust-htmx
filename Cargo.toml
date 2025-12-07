@@ -14,3 +14,8 @@ rocket = "0.5.1"
 # templating
 rocket_dyn_templates = { version = "0.2.0", features = ["handlebars"] }
 serde = { version = "1.0.228", features = ["derive"] }
+
+[lints.clippy]
+unwrap_used = "deny"
+panic = "deny"
+expect_used = "deny"
