@@ -6,7 +6,7 @@ edition = "2024"
 [dependencies]
 
 # db
-sqlx = { version = "0.8.6", features = ["runtime-async-std", "sqlite"] }
+sqlx = { version = "0.9.0", features = ["runtime-async-std", "sqlite"] }
 
 # web framework
 rocket = "0.5.1"
