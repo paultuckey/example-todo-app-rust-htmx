@@ -1,13 +1,11 @@
 use crate::DB_URL;
-use serde::Serialize;
 use sqlx::migrate::MigrateDatabase;
 use sqlx::{Error, Pool, Sqlite, SqlitePool};
 
-#[derive(Serialize)]
 pub struct Todo {
-    id: i64,
-    title: String,
-    completed: bool,
+    pub id: i64,
+    pub title: String,
+    pub completed: bool,
 }
 
 async fn conn() -> Result<Pool<Sqlite>, Error> {
