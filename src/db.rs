@@ -1,6 +1,7 @@
 use crate::DB_URL;
 use sqlx::migrate::MigrateDatabase;
 use sqlx::{Error, Pool, Sqlite, SqlitePool};
+use tracing::info;
 
 pub struct Todo {
     pub id: i64,
