@@ -1,5 +1,5 @@
 use crate::db::{
-    DbError, add_todo, clear_completed, get_todo, get_todos, maybe_create_database,
+    DbError, Todo, add_todo, clear_completed, get_todo, get_todos, maybe_create_database,
     toggle_todo_completed, update_todo,
 };
 use axum::extract::Path;
@@ -9,7 +9,6 @@ use axum::routing::post;
 use axum::{Form, Router, routing::get};
 use serde::Deserialize;
 use std::error::Error;
-use std::fmt::Display;
 use tracing::info;
 
 mod db;
@@ -42,11 +41,19 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
 async fn get_index() -> Result<Html<String>, StatusCode> {
     let todos = get_todos().await?;
-    ok(templates::index(
-        todos
-            .iter()
-            .map(|todo| templates::index::TodosItem::new(todo.id, todo.completed, &todo.title))
-            .collect::<Vec<_>>(),
+    use templates::index::{TodosItem, Vars};
+    Ok(Html(
+        Vars {
+            todos: todos
+                .iter()
+                .map(|t| TodosItem {
+                    id: t.id,
+                    completed: t.completed,
+                    title: &t.title,
+                })
+                .collect::<Vec<_>>(),
+        }
+        .render(),
     ))
 }
 
@@ -57,12 +64,7 @@ struct TodoForm {
 
 async fn post_todos(Form(form): Form<TodoForm>) -> Result<Html<String>, StatusCode> {
     let id = add_todo(&form.title).await?;
-    let todo = get_todo(id).await?;
-    ok(templates::todo_read(templates::todo_read::Todo::new(
-        todo.id,
-        todo.completed,
-        &todo.title,
-    )))
+    Ok(todo_read_html(&get_todo(id).await?))
 }
 
 async fn post_todo_edit(
@@ -70,50 +72,63 @@ async fn post_todo_edit(
     Form(form): Form<TodoForm>,
 ) -> Result<Html<String>, StatusCode> {
     update_todo(id, &form.title).await?;
-    let todo = get_todo(id).await?;
-    ok(templates::todo_read(templates::todo_read::Todo::new(
-        todo.id,
-        todo.completed,
-        &todo.title,
-    )))
+    Ok(todo_read_html(&get_todo(id).await?))
 }
 
 async fn get_todo_edit(Path(id): Path<i64>) -> Result<Html<String>, StatusCode> {
     let todo = get_todo(id).await?;
-    ok(templates::todo_edit(templates::todo_edit::Todo::new(
-        todo.id,
-        &todo.title,
-    )))
+    use templates::todo_edit::{Todo, Vars};
+    Ok(Html(
+        Vars {
+            todo: Todo {
+                id: todo.id,
+                title: &todo.title,
+            },
+        }
+        .render(),
+    ))
 }
 
 async fn get_todo_read(Path(id): Path<i64>) -> Result<Html<String>, StatusCode> {
-    let todo = get_todo(id).await?;
-    ok(templates::todo_read(templates::todo_read::Todo::new(
-        todo.id,
-        todo.completed,
-        &todo.title,
-    )))
+    Ok(todo_read_html(&get_todo(id).await?))
 }
 
 async fn post_todo_complete(Path(id): Path<i64>) -> Result<Html<String>, StatusCode> {
     toggle_todo_completed(id).await?;
-    let todo = get_todo(id).await?;
-    ok(templates::todo_read(templates::todo_read::Todo::new(
-        todo.id,
-        todo.completed,
-        &todo.title,
-    )))
+    Ok(todo_read_html(&get_todo(id).await?))
 }
 
 async fn post_todo_clear_completed() -> Result<Html<String>, StatusCode> {
     clear_completed().await?;
     let todos = get_todos().await?;
-    ok(templates::todo_cards(
-        todos
-            .iter()
-            .map(|todo| templates::todo_cards::TodosItem::new(todo.id, todo.completed, &todo.title))
-            .collect::<Vec<_>>(),
+    use templates::todo_cards::{TodosItem, Vars};
+    Ok(Html(
+        Vars {
+            todos: todos
+                .iter()
+                .map(|t| TodosItem {
+                    id: t.id,
+                    completed: t.completed,
+                    title: &t.title,
+                })
+                .collect::<Vec<_>>(),
+        }
+        .render(),
     ))
+}
+
+fn todo_read_html(t: &Todo) -> Html<String> {
+    use templates::todo_read::{Todo, Vars};
+    Html(
+        Vars {
+            todo: Todo {
+                id: t.id,
+                completed: t.completed,
+                title: &t.title,
+            },
+        }
+        .render(),
+    )
 }
 
 // Helper function to map DB errors into HTTP errors
@@ -121,9 +136,4 @@ impl From<DbError> for StatusCode {
     fn from(_: DbError) -> Self {
         StatusCode::INTERNAL_SERVER_ERROR
     }
-}
-
-// Helper function to render templates
-fn ok(template: impl Display) -> Result<Html<String>, StatusCode> {
-    Ok(Html(template.to_string()))
 }
