@@ -4,7 +4,7 @@ A simple example TODO app build using:
 
 - [htmx](https://htmx.org/)
 - [Rust](https://www.rust-lang.org/)
-- [Axum]([https://rocket.rs/](https://github.com/tokio-rs/axum)) web framework
+- [Axum](https://github.com/tokio-rs/axum) web framework
 - [typed-handlebars](https://github.com/paultuckey/typed-handlebars) for HTML templates
 - [SQLx](https://github.com/launchbadge/sqlx) and [SQLite](https://sqlite.org/)
 
