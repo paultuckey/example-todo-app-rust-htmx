@@ -15,7 +15,7 @@ tokio = { version = "1.53", features = ["full"] }
 axum = "0.8"
 
 # templating
-typed-handlebars = { version = "0.3.0" }
+typed-handlebars = { version = "0.4.0" }
 
 # form serialization
 serde = { version = "1.0", features = ["derive"] }
